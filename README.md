@@ -53,7 +53,7 @@ if this is the first grammar thats loaded, set our current grammar to it
 
 ---
 
-`(load-directory dir)`
+`(load-grammar-directory dir)`
 
 loads all grammars from directory DIR
 

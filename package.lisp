@@ -7,4 +7,4 @@
   (:export :with-grammar
            :expand
 	   :load-grammar
-	   :load-directory))
+	   :load-grammar-directory))

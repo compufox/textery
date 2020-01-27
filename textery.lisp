@@ -8,7 +8,7 @@
 (defvar *current-grammar* nil
   "current grammar being used")
 
-(defun load-directory (dir)
+(defun load-grammar-directory (dir)
   "loads all grammars from directory DIR"
   (when (uiop:directory-exists-p dir)
     (mapcar #'load-grammar (uiop:directory-files dir))))
