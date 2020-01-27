@@ -53,6 +53,13 @@ if this is the first grammar thats loaded, set our current grammar to it
 
 ---
 
+`(load-directory dir)`
+
+loads all grammars from directory DIR
+
+
+---
+
 `(with-grammar grammar &body body)`
 
 executes BODY with GRAMMAR set to be the current grammar

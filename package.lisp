@@ -6,4 +6,5 @@
 		:decode-json-from-string)
   (:export :with-grammar
            :expand
-	   :load-grammar))
+	   :load-grammar
+	   :load-directory))
