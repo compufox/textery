@@ -34,24 +34,65 @@ very volatile, only used during evaluations")
   (random-from-list (agetf (append (gethash *current-grammar* *grammars*) *action-rules*)
 			   (json-string-to-symbol key :as-keyword t))))
 
+(defun process-actions (actions text)
+  "processes all ACTIONS, removing them from TEXT"
+  (if actions
+      (let ((modified-text text))
+	(dolist (a actions modified-text)
+
+	  ;; remove bracket characters
+	  (let ((stripped (ppcre:regex-replace-all "(\\[|\\])" a "")))
+
+	    ;; if it has : in it then it's defining a new rule
+	    (if (str:containsp ":" stripped)
+		(destructuring-bind (key value) (str:split #\: stripped)
+		  (let ((key (json-string-to-symbol key :as-keyword t))
+			(value (if (str:containsp "," value) (str:split #\, value) (list value))))
+
+		    ;; remove keys from the action rules in case they're already there
+		    (setf *action-rules* (remove key *action-rules* :key #'car))
+
+		    ;; then push the new rule in
+		    (push (cons key value) *action-rules*)))
+
+		;; if it doesnt have a rule, then we should expand it.
+		;;  going off of the Official(tm) examples, the only
+		;;  valid text that can exist inside an action is
+		;;  text that expands to MORE actions.
+		(expand stripped)))
+	  
+	  ;; remove the action text from the string
+	  (setf modified-text (str:replace-all a "" modified-text))))
+
+      ;; if we didnt get any actions, then we just 
+      ;;  return the text we received
+      text))
+
+(defun process-symbols (symbols text)
+  "processes all SYMBOLS, evaluating and replacing them in TEXT"
+  (if symbols
+      (let ((modified-text text))
+	(dolist (s symbols modified-text)
+
+	  ;; replace each symbol in text with a random value
+	  ;;  from our loaded grammarx
+	  (setf modified-text
+		(str:replace-all s
+				 (destructuring-bind (key &rest funcs)
+				     (str:split #\|
+						(str:trim (str:replace-all "#" "" s)))
+				   (apply-arguments (grammar-value key) funcs))
+				 modified-text))))
+      text))
+
 (defun expand (text)
   "expands TEXT"
-  (let ((expanded-text
-	  (str:trim
-	   (str:join
-	    " "
-	    (loop for word in (str:words text)
-		  collect
-		  (if (expandable-p word)
-		      (if (action-p word)
-			  (parse-action word)
-			  (let ((word-list (str:split #\| (str:replace-all "#" "" word))))
-			    (apply-arguments (grammar-value (car word-list)) (cdr word-list))))
-		      (if (action-p word)
-			  (parse-action word)
-			  word)))))))
-    
+  (let* ((processed-actions (process-actions (get-all-actions text) text))
+	 (expanded-text (process-symbols (get-all-symbols processed-actions)
+					 processed-actions)))
+
     ;; if we find more expandable text after expanding, we recurse
-    (if (find-if #'expandable-p (str:words expanded-text))
+    (if (or (get-all-symbols expanded-text)
+	    (get-all-actions expanded-text))
 	(expand expanded-text)
 	expanded-text)))

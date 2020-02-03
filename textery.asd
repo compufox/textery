@@ -6,7 +6,7 @@
   :license  "BSD 3-Clause"
   :version "0.1"
   :serial t
-  :depends-on (:str :cl-json :uiop)
+  :depends-on (:str :cl-json :uiop :cl-ppcre)
   :components ((:file "package")
 	       (:file "util")
 	       (:file "textery")))

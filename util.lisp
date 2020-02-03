@@ -19,27 +19,6 @@ ARGUMENTS is a list of strings that refer to lisp functions"
   "returns a function of name NAME"
   (symbol-function (intern (string-upcase (str:trim name)))))
 
-(defun expandable-p (word)
-  "checks if WORD ends and begins with #"
-  (and (str:starts-with-p "#" word)
-       (str:ends-with-p "#" word)))
-
-(defun action-p (word)
-  (and (str:containsp "[" word)
-       (str:containsp "]" word)))
-
-(defun has-rule-p (word)
-  (str:containsp ":" word))
-
-(defun parse-action (word)
-  (dolist (w (str:split #\] word))
-    (if (has-rule-p w)
-	(let ((parsed (str:split #\: (subseq w 1))))
-	  (push (cons (car parsed)
-		      (cadr parsed))
-		*action-rules*))
-	(subseq w 1))))
-
 (defun json-string-to-symbol (json-string &key as-string as-keyword)
   "converts camelCase JSON-STRING to a symbol
 
@@ -72,3 +51,11 @@ if AS-KEYWORD is non-nil, returns a keyword"
   "getf but for alists"
   (or (cdr (assoc indicator place :test #'equal))
       default))
+
+(defun get-all-symbols (text)
+  "retrieves all symbols from TEXT"
+  (ppcre:all-matches-as-strings "#([^#]*)#" text))
+
+(defun get-all-actions (text)
+  "retrieves all actions from TEXT"
+  (ppcre:all-matches-as-strings "\\[([^\\]]*)\\]" text))
