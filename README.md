@@ -1,7 +1,7 @@
 # textery
 ### _ava fox_
 
-reimplementation of tracery in lisp
+implementation of tracery in lisp
 
 ## Installation
 
@@ -64,11 +64,13 @@ loads all grammars from directory DIR
 
 executes BODY with GRAMMAR set to be the current grammar
 
+GRAMMAR is the filename (minus extension) of the grammar file previous loaded 
+
 ---
 
 `(expand text)`
 
-expands TEXT using the current grammar (first loaded grammar file)
+expands TEXT using the current grammar
 
 ---
 
