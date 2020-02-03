@@ -59,3 +59,15 @@ if AS-KEYWORD is non-nil, returns a keyword"
 (defun get-all-actions (text)
   "retrieves all actions from TEXT"
   (ppcre:all-matches-as-strings "\\[([^\\]]*)\\]" text))
+
+(defun replace-first (old new s)
+  "replaces the first occurance of OLD with NEW in S
+
+if OLD isn't found in S, returns S as-is"
+  (let ((start (search old s :test #'string=)))
+    (if start
+	(concatenate 'string
+		     (str:replace-all old new (subseq s 0 (+ start (length old))))
+		     (subseq s (+ start (length old))))
+	s)))
+  

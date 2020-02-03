@@ -47,7 +47,9 @@ very volatile, only used during evaluations")
 	    (if (str:containsp ":" stripped)
 		(destructuring-bind (key value) (str:split #\: stripped)
 		  (let ((key (json-string-to-symbol key :as-keyword t))
-			(value (if (str:containsp "," value) (str:split #\, value) (list value))))
+			(value (if (str:containsp "," value)
+				   (str:split #\, value)
+				   (list (expand value)))))
 
 		    ;; remove keys from the action rules in case they're already there
 		    (setf *action-rules* (remove key *action-rules* :key #'car))
@@ -75,14 +77,14 @@ very volatile, only used during evaluations")
 	(dolist (s symbols modified-text)
 
 	  ;; replace each symbol in text with a random value
-	  ;;  from our loaded grammarx
+	  ;;  from our loaded grammar
 	  (setf modified-text
-		(str:replace-all s
-				 (destructuring-bind (key &rest funcs)
-				     (str:split #\|
-						(str:trim (str:replace-all "#" "" s)))
-				   (apply-arguments (grammar-value key) funcs))
-				 modified-text))))
+		(replace-first s
+			       (destructuring-bind (key &rest funcs)
+				   (str:split #\|
+					      (str:trim (str:replace-all "#" "" s)))
+				 (apply-arguments (grammar-value key) funcs))
+			       modified-text))))
       text))
 
 (defun expand (text)
