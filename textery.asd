@@ -4,7 +4,7 @@
   :description "tracery lisp implementation"
   :author "ava fox"
   :license  "BSD 3-Clause"
-  :version "0.1"
+  :version "0.2"
   :serial t
   :depends-on (:str :cl-json :uiop :cl-ppcre)
   :components ((:file "package")
