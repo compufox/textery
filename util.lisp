@@ -24,6 +24,22 @@ ARGUMENTS is a list of strings that refer to lisp functions"
   (and (str:starts-with-p "#" word)
        (str:ends-with-p "#" word)))
 
+(defun action-p (word)
+  (and (str:containsp "[" word)
+       (str:containsp "]" word)))
+
+(defun has-rule-p (word)
+  (str:containsp ":" word))
+
+(defun parse-action (word)
+  (dolist (w (str:split #\] word))
+    (if (has-rule-p w)
+	(let ((parsed (str:split #\: (subseq w 1))))
+	  (push (cons (car parsed)
+		      (cadr parsed))
+		*action-rules*))
+	(subseq w 1))))
+
 (defun json-string-to-symbol (json-string &key as-string as-keyword)
   "converts camelCase JSON-STRING to a symbol
 
@@ -34,7 +50,11 @@ if AS-KEYWORD is non-nil, returns a keyword"
 			     with index = 0
 			     for c across json-string
 			     if (and (upper-case-p c) (> index 0))
-			     do (format out "-~a" (char-downcase c))
+			      do (format out "-~a" (char-downcase c))
+			     
+			     else if (char= c #\_)
+			      do (format out "--")
+			     
 			     else do (format out "~a" c)
 			       
 			     do (setf index (1+ index))))))

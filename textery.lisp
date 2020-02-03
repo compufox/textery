@@ -8,6 +8,10 @@
 (defvar *current-grammar* nil
   "current grammar being used")
 
+(defvar *action-rules* nil
+  "rules added by actions
+very volatile, only used during evaluations")
+
 (defun load-grammar-directory (dir)
   "loads all grammars from directory DIR"
   (when (uiop:directory-exists-p dir)
@@ -27,18 +31,25 @@
 
 (defun grammar-value (key)
   "returns a value from the current grammar using KEY"
-  (random-from-list (agetf (gethash *current-grammar* *grammars*)
+  (random-from-list (agetf (append (gethash *current-grammar* *grammars*) *action-rules*)
 			   (json-string-to-symbol key :as-keyword t))))
 
 (defun expand (text)
   "expands TEXT"
-  (let ((expanded-text (str:join
-			" "
-			(loop for word in (str:words text)
-			      collect (if (expandable-p word)
-					  (let ((word-list (str:split #\| (str:replace-all "#" "" word))))
-					    (apply-arguments (grammar-value (car word-list)) (cdr word-list)))
-					  word)))))
+  (let ((expanded-text
+	  (str:trim
+	   (str:join
+	    " "
+	    (loop for word in (str:words text)
+		  collect
+		  (if (expandable-p word)
+		      (if (action-p word)
+			  (parse-action word)
+			  (let ((word-list (str:split #\| (str:replace-all "#" "" word))))
+			    (apply-arguments (grammar-value (car word-list)) (cdr word-list))))
+		      (if (action-p word)
+			  (parse-action word)
+			  word)))))))
     
     ;; if we find more expandable text after expanding, we recurse
     (if (find-if #'expandable-p (str:words expanded-text))
