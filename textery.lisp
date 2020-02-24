@@ -81,11 +81,16 @@ very volatile, only used during evaluations")
 	  (setf modified-text
 		(replace-first s
 			       (destructuring-bind (key &rest funcs)
-				   (str:split #\|
+				   (str:split #\.
 					      (str:trim (str:replace-all "#" "" s)))
 				 (apply-arguments (grammar-value key) funcs))
 			       modified-text))))
       text))
+
+(defun list-grammars ()
+  "returns a list of loaded grammars"
+  (loop for k being the hash-key of *grammars*
+	collect k))
 
 (defun expand (text)
   "expands TEXT"

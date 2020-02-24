@@ -25,7 +25,7 @@ If you have multiple grammars loaded use the `(with-grammar)` macro to select wh
   (expand "#test#"))
 ```
 
-You can pass arguments to the text to be expanded by using pipes: `(expand-text "#test|string-upcase#")`, these can be chained together by doing `(expand-text "#test|string-upcase|reverse#")`
+You can pass arguments to the text to be expanded by using periods: `(expand-text "#test.string-upcase#")`, these can be chained together by doing `(expand-text "#test.string-upcase.reverse#")`
 
 Arguments are any lisp function that can handle at least one string parameter. You can even provide your own!
 
@@ -38,7 +38,7 @@ If you want to use functions that require more than one parameter do as follows:
 			   param
 			   param2))
 
-(expand "#test|example-argument,5,test#")
+(expand "#test.example-argument,5,test#")
 ```
 
 ## API
@@ -57,7 +57,6 @@ if this is the first grammar thats loaded, set our current grammar to it
 
 loads all grammars from directory DIR
 
-
 ---
 
 `(with-grammar grammar &body body)`
@@ -65,6 +64,12 @@ loads all grammars from directory DIR
 executes BODY with GRAMMAR set to be the current grammar
 
 GRAMMAR is the filename (minus extension) of the grammar file previous loaded 
+
+---
+
+`(list-grammars)`
+
+returns a list of all loaded grammars
 
 ---
 
