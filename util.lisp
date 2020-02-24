@@ -70,4 +70,27 @@ if OLD isn't found in S, returns S as-is"
 		     (str:replace-all old new (subseq s 0 (+ start (length old))))
 		     (subseq s (+ start (length old))))
 	s)))
-  
+
+(flet ((c= (char &rest compare)
+	 (loop for c in compare
+	       if (char= (coerce char 'character)
+			 (coerce c 'character))
+		 return t)))
+  (defun a (word)
+    "puts 'a' or 'an' in front of WORD"
+    (format nil "~a ~a"
+	    (if (c= (subseq (string-downcase word) 0 1)
+		    "a" "e" "i" "o" "u")
+		"an"
+		"a")
+	    word))
+
+  (defun s (word)
+    "naively pluralizes WORD"
+    (let* ((length (length word))
+	   (last-letter (subseq word (1- length))))
+      (format nil "~a~a" (subseq word 0 (1- length))
+	      (cond
+		((c= last-letter "s") "ses")
+		((c= last-letter "y") "ies")
+		(t (concatenate 'string last-letter "s")))))))
