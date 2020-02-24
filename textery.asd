@@ -9,4 +9,5 @@
   :depends-on (:str :cl-json :uiop :cl-ppcre)
   :components ((:file "package")
 	       (:file "util")
+	       (:file "eng-modifiers")
 	       (:file "textery")))

@@ -2,7 +2,8 @@
 
 (in-package :textery)
 
-(declaim (inline parse-function agetf random-from-list))
+(declaim (inline parse-function agetf random-from-list
+		 vowel-p last-letter))
 
 (defun apply-arguments (text arguments)
   "applies all ARGUMENTS to TEXT
@@ -71,26 +72,17 @@ if OLD isn't found in S, returns S as-is"
 		     (subseq s (+ start (length old))))
 	s)))
 
-(flet ((c= (char &rest compare)
-	 (loop for c in compare
-	       if (char= (coerce char 'character)
-			 (coerce c 'character))
-		 return t)))
-  (defun a (word)
-    "puts 'a' or 'an' in front of WORD"
-    (format nil "~a ~a"
-	    (if (c= (subseq (string-downcase word) 0 1)
-		    "a" "e" "i" "o" "u")
-		"an"
-		"a")
-	    word))
+(defun c= (char &rest compare)
+  "returns non-nil if CHAR is one of COMPARE characters"
+  (loop for c in compare
+     if (char= (coerce char 'character)
+	       (coerce c 'character))
+     return t))
 
-  (defun s (word)
-    "naively pluralizes WORD"
-    (let* ((length (length word))
-	   (last-letter (subseq word (1- length))))
-      (format nil "~a~a" (subseq word 0 (1- length))
-	      (cond
-		((c= last-letter "s") "ses")
-		((c= last-letter "y") "ies")
-		(t (concatenate 'string last-letter "s")))))))
+(defun vowel-p (char)
+  "returns non-nil is CHAR is a vowel"
+  (c= char "a" "e" "i" "o" "u"))
+
+(defun last-letter (word)
+  "gets last letter of WORD"
+  (string (aref word (1- (length word)))))
