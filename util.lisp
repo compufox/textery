@@ -18,7 +18,12 @@ ARGUMENTS is a list of strings that refer to lisp functions"
 
 (defun parse-function (name)
   "returns a function of name NAME"
-  (symbol-function (intern (string-upcase (str:trim name)))))
+  (let ((func-name (string-upcase (str:trim name))))
+    (multiple-value-bind (symbol place) (intern func-name)
+      (symbol-function 
+       (if (eq place :inherited)
+	   (intern func-name "TEXTERY")
+	   symbol)))))
 
 (defun json-string-to-symbol (json-string &key as-string as-keyword)
   "converts camelCase JSON-STRING to a symbol
