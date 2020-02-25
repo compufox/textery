@@ -1,5 +1,15 @@
 (in-package :textery)
 
+(defun possesive (word)
+  "naively converts WORD into its possesive form"
+  (let ((check (string-downcase word)))
+    (cond
+      ((string= check "it") "its")
+      ((string= check "us") "our")
+      ((string= check "who") "whose")
+      ((c= (last-letter check) "s") (str:concat word "'"))
+      (t (str:concat word "'s")))))
+
 (defun a (word)
   "puts 'a' or 'an' in front of WORD"
   (format nil "~a ~a"
