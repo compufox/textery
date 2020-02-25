@@ -24,6 +24,13 @@ very volatile, only used during evaluations")
 	  (decode-json-from-string (uiop:read-file-string file)))
     (unless *current-grammar* (setf *current-grammar* (pathname-name file)))))
 
+(defun create-grammar (name grammar)
+  "creates a grammar from a string
+
+NAME is a string that denotes what the grammar is to be called
+GRAMMAR is a string that contains tracery formatted json"
+  (setf (gethash name *grammars*) (decode-json-from-string grammar)))
+
 (defmacro with-grammar (grammar &body body)
   "executes BODY with current-grammar set to GRAMMAR"
   `(let ((*current-grammar* ,grammar))

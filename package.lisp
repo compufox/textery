@@ -8,4 +8,5 @@
   (:export :with-grammar
            :expand
 	   :load-grammar
-	   :load-grammar-directory))
+	   :load-grammar-directory
+	   :create-grammar))

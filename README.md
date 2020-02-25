@@ -59,6 +59,14 @@ loads all grammars from directory DIR
 
 ---
 
+`(create-grammar name grammar)`
+
+manually creates a grammar using NAME and GRAMMAR
+
+GRAMMAR is a tracery-formatted json string
+
+---
+
 `(with-grammar grammar &body body)`
 
 executes BODY with GRAMMAR set to be the current grammar
