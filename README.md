@@ -38,7 +38,7 @@ If you want to use functions that require more than one parameter do as follows:
 			   param
 			   param2))
 
-(expand "#test.example-argument,5,test#")
+(expand "#test.example-argument(5,test)#")
 ```
 
 ## API

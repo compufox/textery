@@ -10,19 +10,26 @@
 
 ARGUMENTS is a list of strings that refer to lisp functions"
   (if arguments
-      (let ((func (str:split #\, (car arguments))))
+      (let* ((parsed (str:split #\, (car arguments)))
+	     (args (str:split #\) (cadr parsed) :omit-nulls t))
+	     (func (str:split #\( (car parsed)))
+	     (args (append (cdr func) args)))
 	(apply-arguments
-	 (apply (parse-function (car func)) text (cdr func))
+	 (apply (parse-function (car func)) text (mapcar #'str:trim args))
 	 (cdr arguments)))
       text))
 
 (defun parse-function (name)
   "returns a function of name NAME"
-  (let ((func-name (string-upcase (str:trim name))))
-    (multiple-value-bind (symbol place) (intern func-name)
+  (let* ((name (str:split #\: (string-upcase (str:trim name))))
+	 (pkg (car name))
+	 (func (cadr name)))
+    (multiple-value-bind (symbol place) (intern (or func pkg) (if (and func pkg)
+								  pkg
+								  *package*))
       (symbol-function 
        (if (eq place :inherited)
-	   (intern func-name "TEXTERY")
+	   (intern (or func pkg) "TEXTERY")
 	   symbol)))))
 
 (defun json-string-to-symbol (json-string &key as-string as-keyword)
