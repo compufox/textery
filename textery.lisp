@@ -38,8 +38,15 @@ GRAMMAR is a string that contains tracery formatted json"
 
 (defun grammar-value (key)
   "returns a value from the current grammar using KEY"
-  (random-from-list (agetf (append (gethash *current-grammar* *grammars*) *action-rules*)
-			   (json-string-to-symbol key :as-keyword t))))
+  (let ((value (agetf (append
+		       (gethash *current-grammar* *grammars*)
+		       *action-rules*)
+		      (json-string-to-symbol key :as-keyword t))))
+
+    ;; in case we have a single value for KEY
+    (typecase value
+      (string value)
+      (list (random-from-list value)))))
 
 (defun process-actions (actions text)
   "processes all ACTIONS, removing them from TEXT"
