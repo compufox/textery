@@ -21,7 +21,7 @@ ARGUMENTS is a list of strings that refer to lisp functions"
 
 (defun parse-function (name)
   "returns a function of name NAME"
-  (let* ((name (str:split #\: (string-upcase (str:trim name))))
+  (let* ((name (str:split #\: (string-upcase (str:trim name)) :omit-nulls t))
 	 (pkg (car name))
 	 (func (cadr name)))
     (multiple-value-bind (symbol place) (intern (or func pkg) (if (and func pkg)
