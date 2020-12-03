@@ -11,15 +11,21 @@
 ARGUMENTS is a list of strings that refer to lisp functions"
   (if arguments
       (let* ((func (car (str:split #\( (car arguments))))
-             (args-string (str:replace-all "(" ""
-                                           (str:replace-all func ""
-                                                            (car (str:split #\) (car arguments) :omit-nulls t)))))
-	     (args (when (str:containsp "," args-string)
-                     (str:split #\, args-string))))
+	     (args (parse-func-arguments func (car arguments))))
 	(apply-arguments
 	 (apply (parse-function func) (append (list text) (when args (mapcar #'str:trim args))))
 	 (cdr arguments)))
       text))
+
+(defun parse-func-arguments (funcname funcall)
+  "parses arguments passed into FUNCALL
+
+returns a list of arguments, or nil"
+  (let ((arg-string (str:replace-all "(" ""
+                      (str:replace-all funcname ""
+                        (car (str:split #\) funcall :omit-nulls t))))))
+    (when (str:containsp "," arg-string)
+      (str:split #\, arg-string))))
 
 (defun parse-function (name)
   "returns a function of name NAME"
